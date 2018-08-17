@@ -26,8 +26,10 @@ class ViewController: UIViewController, UISearchBarDelegate {
     }
 
     @IBOutlet weak var searchText: UISearchBar!
-    
     @IBOutlet weak var tableView: UITableView!
+    
+    // お菓子のリスト（タプル配列）
+    var okashiList : [(maker:String, name:String, link:URL, image:URL)] = []
     
     // 検索ボタンタップ時
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
@@ -90,7 +92,23 @@ class ViewController: UIViewController, UISearchBarDelegate {
                 // 受け取ったJSONデータをパース（解析）して格納
                 let json = try decoder.decode(ResultJson.self, from: data!)
                 
-                print(json)
+                // お菓子の情報が取得できているか確認
+                if let items = json.item {
+                    // 取得しているお菓子の数だけ処理
+                    for item in items {
+                        // メーカ名，お菓子の名称，掲載URL，画像URLをアンラップ
+                        if let maker = item.maker, let name = item.name, let link = item.url, let image = item.image {
+                            // １つのお菓子をタプルでまとめて整理
+                            let okashi = (maker, name, link, image)
+                            // お菓子の配列へ追加
+                            self.okashiList.append(okashi)
+                        }
+                    }
+                    if let okashidbg = self.okashiList.first {
+                        print("-----------------")
+                        print("okashiList[0] = \(okashidbg)")
+                    }
+                }
             } catch {
                 // エラー処理
                 print("エラーが出ました")
